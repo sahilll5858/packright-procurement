@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PackRight Manufacturing · Vendor Comparison & Procurement Assistant</title>
+<style>
+  :root {
+    --navy: #152A4A;
+    --teal: #0E9F8E;
+    --teal-2: #129EB0;
+    --bg: #F4F7FB;
+    --card: #FFFFFF;
+    --ink: #1B2733;
+    --muted: #5A6B7C;
+    --green: #1E9E5A;
+    --red: #D64545;
+    --amber: #D99A1B;
+    --line: #E3EAF2;
+    --radius: 14px;
+    --shadow: 0 2px 10px rgba(21,42,74,.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  header {
+    background: linear-gradient(135deg, var(--navy), #1D3A63);
+    color: #fff;
+    padding: 22px 28px 18px;
+  }
+  header .wrap { max-width: 1180px; margin: 0 auto; }
+  header h1 { font-size: 26px; letter-spacing: .3px; }
+  header p { color: #BFD9E6; font-size: 14px; margin-top: 4px; }
+  header .badge {
+    display: inline-block; margin-top: 10px; background: rgba(255,255,255,.14);
+    border: 1px solid rgba(255,255,255,.25); padding: 3px 12px; border-radius: 20px;
+    font-size: 12px; color: #E8F4FF;
+  }
+  main { max-width: 1180px; margin: 22px auto 60px; padding: 0 18px; }
+
+  /* sidebar-ish controls row */
+  .panel {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 18px;
+  }
+  .panel h2 { font-size: 17px; color: var(--navy); margin-bottom: 6px; }
+  .panel .sub { color: var(--muted); font-size: 13px; margin-bottom: 12px; }
+  .grid { display: grid; gap: 14px; }
+  .crit-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; }
+
+  /* tabs */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .tabs button {
+    border: 1px solid var(--line); background: #fff; color: var(--navy);
+    padding: 9px 16px; border-radius: 22px; font-size: 13.5px; cursor: pointer;
+    font-weight: 600; transition: all .15s;
+  }
+  .tabs button:hover { border-color: var(--teal); }
+  .tabs button.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .tab { display: none; }
+  .tab.active { display: block; animation: fade .2s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: none;} }
+
+  /* tables */
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  th { background: var(--navy); color: #fff; font-weight: 600; white-space: nowrap; }
+  tr.hl { background: #F0FAF7; }
+  .num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+  .pill.green { background: #E3F6EC; color: var(--green); }
+  .pill.red { background: #FDEAEA; color: var(--red); }
+  .pill.amber { background: #FCF1DE; color: var(--amber); }
+
+  /* metric strip */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-bottom: 18px; }
+  .metric { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+            box-shadow: var(--shadow); padding: 14px 16px; }
+  .metric .k { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+  .metric .v { font-size: 24px; font-weight: 800; color: var(--navy); margin-top: 4px; }
+  .metric .d { font-size: 12.5px; color: var(--teal); margin-top: 2px; }
+
+  button.btn {
+    background: var(--teal); color: #fff; border: none; padding: 10px 18px;
+    border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  button.btn:hover { filter: brightness(1.06); }
+  button.btn.ghost { background: #fff; color: var(--navy); border: 1px solid var(--line); }
+
+  input[type=text], textarea, select {
+    width: 100%; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px;
+    font-size: 13.5px; font-family: inherit; background: #FBFDFF;
+  }
+  textarea { min-height: 90px; }
+  label { font-size: 13px; font-weight: 600; color: var(--navy); display: block; margin-bottom: 4px; }
+
+  .slider-row { margin-bottom: 12px; }
+  .slider-row .lbl { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--navy); }
+  input[type=range] { width: 100%; accent-color: var(--teal); margin-top: 4px; }
+
+  .quote { background: #FBFDFF; border: 1px solid var(--line); border-left: 4px solid var(--teal);
+           border-radius: 10px; padding: 12px 14px; margin-bottom: 12px; white-space: pre-wrap;
+           font-family: Consolas, monospace; font-size: 12.5px; color: #33414F; }
+
+  .banner { border-radius: 12px; padding: 12px 16px; font-size: 14px; margin: 12px 0; }
+  .banner.ok { background: #E3F6EC; color: #12663A; border: 1px solid #BFE8CF; }
+  .banner.warn { background: #FCF1DE; color: #7A5210; border: 1px solid #F2DFBC; }
+  .banner.info { background: #E7F2FB; color: #1D4E7A; border: 1px solid #CBDFF0; }
+
+  details { border: 1px solid var(--line); border-radius: 10px; padding: 10px 14px; margin: 8px 0; background: #FBFDFF; }
+  summary { font-weight: 600; color: var(--navy); cursor: pointer; font-size: 13.5px; }
+
+  .chat { max-height: 340px; overflow-y: auto; border: 1px solid var(--line); border-radius: 12px; padding: 12px; background: #FBFDFF; }
+  .msg { margin-bottom: 10px; }
+  .msg .who { font-size: 11.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .msg.user .who { color: var(--teal-2); }
+  .msg .body { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; margin-top: 3px; }
+  .chat-input { display: flex; gap: 8px; margin-top: 10px; }
+
+  .flex { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+  .barchart { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+  .bar-row .bar-lbl { font-size: 12.5px; font-weight: 600; color: var(--navy); margin-bottom: 3px; }
+  .bar-track { background: #EAF0F7; border-radius: 8px; height: 18px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 8px; background: linear-gradient(90deg, var(--teal), var(--teal-2)); }
+  footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 20px; border-top: 1px solid var(--line); }
+  .small { font-size: 12px; color: var(--muted); }
+  code { background: #EEF3F9; padding: 1px 5px; border-radius: 5px; font-size: 12px; }
+  .nojs { display: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <h1>📦 PackRight Manufacturing · Vendor Comparison & Procurement Assistant</h1>
+    <p>Category: Corrugated Cartons &amp; Packaging Materials · Season: Q3 Shipping Pack · Target: 10,000 heavy-duty cartons</p>
+    <span class="badge">Safe-by-design · recommends only · never moves money</span>
+  </div>
+</header>
+
+<main>
+  <noscript><div class="banner warn">This tool needs JavaScript enabled in your browser to run.</div></noscript>
+
+  <!-- Metrics -->
+  <div class="metrics" id="metrics"></div>
+
+  <!-- Weights / policy panel -->
+  <div class="panel">
+    <h2>⚖️ Decision criteria (edit live)</h2>
+    <div class="sub">Weights are normalised to 100%. Green bonus adds up to +5 for recyclable / renewable-energy manufacturers.</div>
+    <div class="crit-grid" id="weights"></div>
+    <div class="flex" style="margin-top:12px">
+      <label style="margin:0 8px 0 0">Min burst-strength grade (0–10):</label>
+      <input type="range" id="minQ" min="0" max="10" step="1" value="8" style="max-width:220px" oninput="refresh()">
+      <span class="small" id="minQv">8</span>
+      <label style="margin:0 8px 0 18px">Green/recyclable bonus (0–5):</label>
+      <input type="range" id="greenB" min="0" max="5" step="0.5" value="0" style="max-width:220px" oninput="refresh()">
+      <span class="small" id="greenBv">0.0</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="active" data-tab="t1">1 · Overview</button>
+    <button data-tab="t2">2 · Raw quotations</button>
+    <button data-tab="t3">3 · Standardised comparison</button>
+    <button data-tab="t4">4 · Review &amp; approve</button>
+    <button data-tab="t5">5 · Policy assistant</button>
+    <button data-tab="t6">6 · Extras (PDF, emails)</button>
+  </div>
+
+  <!-- TAB 1 -->
+  <section class="tab active" id="t1">
+    <div class="panel">
+      <h2>The problem</h2>
+      <p class="sub">PackRight Manufacturing buys corrugated cartons and packaging materials every season. Quotations arrive in completely different formats — one vendor quotes INR all-inclusive, another quotes USD with freight on top, a third quotes ex-works without GST. Comparing them manually takes hours and is error-prone.</p>
+      <h2>What this assistant does</h2>
+      <div class="small" style="line-height:2">
+        · <b>Standardises</b> every quote into one table (landed-cost INR incl. GST + freight, lead-time days, burst-strength grade 0–10).<br>
+        · <b>Compares</b> vendors on weighted criteria you control (Quality, Cost, Lead Time, Reliability).<br>
+        · <b>Enforces policy</b> — below minimum strength grade = flagged and excluded, whatever the price.<br>
+        · <b>Recommends</b> one vendor with transparent reasoning, then <b>you hold the final word</b> (review / override).<br>
+        · <b>Never moves money</b> — output is always a draft approval record for the Finance team.
+      </div>
+      <h2 style="margin-top:14px">Why these criteria?</h2>
+      <div class="metrics" style="margin-top:8px">
+        <div class="metric"><div class="k">Quality / strength</div><div class="v">40%</div><div class="d">burst resistance — non-negotiable</div></div>
+        <div class="metric"><div class="k">Cost</div><div class="v">25%</div><div class="d">landed INR per 1,000 cartons</div></div>
+        <div class="metric"><div class="k">Lead time</div><div class="v">25%</div><div class="d">line can’t wait for cartons</div></div>
+        <div class="metric"><div class="k">Reliability</div><div class="v">10%</div><div class="d">on-time delivery history</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 2 -->
+  <section class="tab" id="t2">
+    <div class="panel">
+      <h2>Quotations as received (untouched)</h2>
+      <p class="sub">Three fictional vendors, three different pricing conventions.</p>
+      <div id="rawQuotes"></div>
+    </div>
+  </section>
+
+  <!-- TAB 3 -->
+  <section class="tab" id="t3">
+    <div class="panel">
+      <h2>Standardised comparison</h2>
+      <p class="sub">All quotes cleaned to the same yardstick: landed INR incl. GST + freight, lead time in days, strength grade out of 10.</p>
+      <div style="overflow-x:auto"><table id="cmpTable"></table></div>
+      <div class="banner ok" id="recBanner"></div>
+      <div class="grid" style="grid-template-columns: 1.2fr 1fr; margin-top:8px">
+        <div>
+          <h2 style="font-size:15px;margin-bottom:4px">Final score by vendor</h2>
+          <div class="barchart" id="chart"></div>
+        </div>
+        <div>
+          <h2 style="font-size:15px;margin-bottom:4px">Policy flags</h2>
+          <div id="flags"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 4 -->
+  <section class="tab" id="t4">
+    <div class="panel">
+      <h2>Recommendation</h2>
+      <div id="recDetail"></div>
+      <div class="banner warn">You hold the final word. Nothing here places an order or moves funds — it records your <b>intent</b> for the Finance team.</div>
+      <h2>Final decision (human-in-the-loop)</h2>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); margin-top:8px">
+        <div><label>Vendor to proceed with</label><select id="chooseVendor"></select></div>
+        <div><label>Action</label><select id="chooseAction">
+          <option>Approve recommended vendor</option>
+          <option>Override — choose a different vendor</option>
+          <option>Request clarification</option>
+        </select></div>
+        <div><label>Approver notes (optional)</label><input type="text" id="notes" placeholder="Justification / comments"></div>
+      </div>
+      <div style="margin-top:12px"><button class="btn" onclick="recordDecision()">Record decision (draft only)</button></div>
+      <div id="recordMsg"></div>
+      <h2 style="margin-top:20px">Approval history (this session)</h2>
+      <div style="overflow-x:auto"><table id="historyTable"></table></div>
+      <div style="margin-top:10px"><button class="btn ghost" onclick="clearHistory()">Clear history</button></div>
+    </div>
+  </section>
+
+  <!-- TAB 5 -->
+  <section class="tab" id="t5">
+    <div class="panel">
+      <h2>Procurement policy Q&amp;A</h2>
+      <p class="sub">Disclosed, rule-based assistant (no hidden LLM). Ask about pricing, strength, lead times, imports, green suppliers or approvals.</p>
+      <div class="flex" id="suggestPills"></div>
+      <div class="chat" id="chatBox"></div>
+      <div class="chat-input">
+        <input type="text" id="chatInput" placeholder="Ask a procurement policy question…" onkeydown="if(event.key==='Enter')askPolicy()">
+        <button class="btn" onclick="askPolicy()">Ask</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TAB 6 -->
+  <section class="tab" id="t6">
+    <div class="panel">
+      <h2>Extras &amp; extensions</h2>
+
+      <details open>
+        <summary>📄 Read a quotation from a PDF</summary>
+        <p class="small" style="margin:6px 0">Fully client-side via pdf.js — nothing is uploaded anywhere.</p>
+        <input type="file" id="pdfFile" accept="application/pdf">
+        <div id="pdfText" class="quote" style="margin-top:10px;display:none"></div>
+        <button class="btn ghost" id="parsePdfBtn" style="display:none;margin-top:8px" onclick="parsePasted()">Standardise detected text</button>
+      </details>
+
+      <details>
+        <summary>⌨️ Paste raw quote text → standardise (demo parser)</summary>
+        <textarea id="pasteArea" placeholder="Paste any quotation text here…"></textarea>
+        <div style="margin-top:8px"><button class="btn" onclick="parsePasted()">Parse &amp; standardise</button></div>
+        <div id="parseResult"></div>
+      </details>
+
+      <details>
+        <summary>✉️ Clarification-email generator</summary>
+        <p class="small" style="margin:6px 0">Draft a professional follow-up to a non-recommended vendor.</p>
+        <div id="emailList"></div>
+      </details>
+    </div>
+  </section>
+</main>
+
+<footer>
+  This assistant produces a transparent, overrideable <b>recommendation only</b>. It performs no purchase, no payment and no
+  contractual commitment on its own — the final financial decision always rests with authorised PackRight Manufacturing personnel.
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.min.mjs" type="module" crossorigin="anonymous"></script>
+<script>
+"use strict";
+
+/* =====================================================================
+   DATA — three fictional quotations, as received (inconsistent formats)
+   ===================================================================== */
+const RAW_QUOTES = [
+  {
+    vendor: "CorrLite Packaging",
+    received:
+`QUOTE #CL-0841  |  PackRight Manufacturing
+Item: Heavy-duty corrugated shipping cartons (5-ply, kraft)
+Price: Rs. 4,85,000 per 10,000 cartons — ALL INCLUSIVE
+(incl. GST @ 18% + local delivery to plant).
+Delivery in 5 days from order (warehouse Nashik).
+Grade: A · ISO 9001 · Recyclable kraft liner.
+Note: mill runs on wind + solar power. Quoted in INR.`
+  },
+  {
+    vendor: "EuroCarton Works",
+    received:
+`QUOTATION #EU-2231, EUROCARTON WORKS
+Item: 10,000 heavy-duty export cartons (imported, 7-ply)
+Price quoted in USD: USD 6,200 + freight USD 400 = USD 6,600.
+Freight NOT included in any GST calc. Add IGST @ 18% at bill of entry.
+Lead time: 18 business days (factory abroad + import).
+Grade: A+ · ISO 9001 + BIS. Longer lead, higher spec.`
+  },
+  {
+    vendor: "PackDesk Supplies",
+    received:
+`PackDesk Supplies — Quotation
+Product: 10,000 corrugated cartons (economy 3-ply)
+Price: INR 4,20,000 EX-WORKS only. GST @ 18% payable separately at invoicing. Freight extra.
+Supply in 8 days from order.
+Grade: B (burst test below 900 kPa spec).
+Manual documentation; some prior delivery delays reported.`
+  },
+];
+
+/* Standardised facts — landed cost per 10,000 cartons, INR incl. GST */
+const VENDORS = [
+  {
+    vendor: "CorrLite Packaging",
+    cost: 485000,          // INR all-inclusive
+    lead: 5,               // days
+    quality: 9,            // burst-strength grade 0-10
+    reliability: 95,       // %
+    green: true,
+    dist: 55,              // km to plant
+    cert: "ISO 9001 · Grade A · recyclable",
+    note: "INR all-inclusive incl. GST + delivery. Green mill bonus eligible."
+  },
+  {
+    vendor: "EuroCarton Works",
+    cost: 654192,          // USD 6,600 @ 84 + IGST 18%
+    lead: 18,
+    quality: 10,
+    reliability: 99,
+    green: false,
+    dist: 240,
+    cert: "ISO 9001 · BIS · Grade A+ (imported)",
+    note: "USD + freight converted to landed INR at budget FX (1 USD = 84 INR) + 18% IGST."
+  },
+  {
+    vendor: "PackDesk Supplies",
+    cost: 495600,          // 420,000 ex-works + 18% GST
+    lead: 8,
+    quality: 6,
+    reliability: 80,
+    green: false,
+    dist: 180,
+    cert: "Grade B · manual documentation",
+    note: "Ex-works price with GST added separately -> adjusted to GST-inclusive total."
+  },
+];
+
+const DEFAULT_WEIGHTS = { quality: 40, cost: 25, lead: 25, reliability: 10 };
+const FX = 84;
+
+/* =====================================================================
+   POLICY KNOWLEDGE BASE (drives the disclosed rule-based Q&A)
+   ===================================================================== */
+const POLICY_KB = [
+  { kw: ["international","import","foreign","overseas","usd","eurocarton"],
+    a: "Any international/imported vendor must hold ISO 9001 (or BIS equivalent) and provide landed-cost (CIF) quotations in INR at a fixed exchange rate. Imported lead times must not exceed 25 days without Divisional Head approval." },
+  { kw: ["quality","strength","burst","grade","kpa","minimum"],
+    a: "Carton burst strength is non-negotiable for our line. Any vendor scoring below 8/10 on the strength grade is flagged 'Non-Compliant' regardless of price — weak cartons cause line stoppages and product damage." },
+  { kw: ["budget","cost","price","cheap","lowest","afford","cheapest"],
+    a: "Total landed cost (INR incl. GST & freight) is compared. But cost is only one of four weighted criteria — a low price never overrides a vendor who fails our strength policy." },
+  { kw: ["vendor","supplier","approve","select","choose","pick","recommend"],
+    a: "The assistant recommends the highest-scoring compliant vendor, but no purchase is ever made automatically. Every decision needs a human approval step; final fund-authorising sign-off sits with Finance." },
+  { kw: ["lead time","delivery","delay","speed","fast","lead"],
+    a: "Lead time is weighted because the packaging line cannot run without cartons. Our guideline favours vendors within a 15-day lead time; longer ones require scheduling approval." },
+  { kw: ["green","recycl","renewable","solar","sustainab","energy","eco"],
+    a: "PackRight runs recyclable-first packaging goals, so we grant a small bonus (up to +5) to vendors using recyclable kraft or renewable energy — strengthening our sustainability brand." },
+  { kw: ["override","change","different vendor","human","review"],
+    a: "Users may override the recommendation at the Review step using their own knowledge. The chosen vendor is recorded in an approval history for traceability." },
+  { kw: ["gst","tax","freight","cif","ex-works","landed","inr","usd","exchange"],
+    a: "All quotations are normalised to a single landed cost in INR including GST and freight. USD quotes are converted at a fixed budget exchange rate so the comparison is fair and reproducible." },
+];
+const POLICY_FALLBACK = "I don't have a specific policy for that yet. Try asking about pricing, strength/quality, lead times, international vendors, GST, green suppliers, or how the approval process works.";
+
+/* =====================================================================
+   SCORING  (pure deterministic logic — transparent & reproducible)
+   ===================================================================== */
+function scoreVendors() {
+  const w = readWeights();            // normalised 0-1
+  const minQ = +document.getElementById("minQ").value;
+  const green = +document.getElementById("greenB").value;
+
+  const minCost = Math.min(...VENDORS.map(v => v.cost));
+  const minLead = Math.min(...VENDORS.map(v => v.lead));
+  const maxQ = Math.max(...VENDORS.map(v => v.quality));
+
+  return VENDORS.map(v => {
+    const invCost = minCost / v.cost;
+    const invLead = minLead / v.lead;
+    const q = v.quality / maxQ;
+    const r = v.reliability / 100;
+    let score = (w.quality*q + w.cost*invCost + w.lead*invLead + w.reliability*r) * 100;
+    if (green > 0 && v.green) score += green;
+    const compliant = v.quality >= minQ;
+    return { ...v, invCost, invLead, q, r, score: Math.round(score*10)/10, compliant };
+  });
+}
+
+function readWeights() {
+  const out = {};
+  ["quality","cost","lead","reliability"].forEach(k => {
+    const el = document.getElementById("w_" + k);
+    out[k] = el ? +el.value : DEFAULT_WEIGHTS[k];
+  });
+  const total = out.quality + out.cost + out.lead + out.reliability;
+  if (!total) return { quality:.25, cost:.25, lead:.25, reliability:.25 };
+  return { quality: out.quality/total, cost: out.cost/total, lead: out.lead/total, reliability: out.reliability/total };
+}
+
+function recommendation(scored) {
+  const compliant = scored.filter(v => v.compliant);
+  if (!compliant.length) return null;
+  return compliant.slice().sort((a,b) => b.score - a.score)[0];
+}
+
+function fmt(n) { return "₹" + Math.round(n).toLocaleString("en-IN"); }
+
+/* =====================================================================
+   RENDERERS
+   ===================================================================== */
+function renderWeights() {
+  const keys = [
+    ["quality", "Quality / strength (higher better)"],
+    ["cost", "Cost (lower better)"],
+    ["lead", "Lead time (faster better)"],
+    ["reliability", "Reliability (higher better)"],
+  ];
+  const host = document.getElementById("weights");
+  host.innerHTML = "";
+  keys.forEach(([k, label]) => {
+    const d = document.createElement("div");
+    d.className = "slider-row";
+    d.innerHTML = `
+      <div class="lbl"><span>${label}</span><b id="wv_${k}">${DEFAULT_WEIGHTS[k]}%</b></div>
+      <input type="range" id="w_${k}" min="0" max="100" step="1" value="${DEFAULT_WEIGHTS[k]}" oninput="refresh()">`;
+    host.appendChild(d);
+  });
+}
+
+function refresh() {
+  document.getElementById("minQv").textContent = document.getElementById("minQ").value;
+  document.getElementById("greenBv").textContent = document.getElementById("greenB").value;
+  ["quality","cost","lead","reliability"].forEach(k => {
+    const el = document.getElementById("wv_" + k);
+    if (el) el.textContent = document.getElementById("w_" + k).value + "%";
+  });
+  renderMetrics(); renderRaw(); renderCmp(); renderReview();
+}
+
+function renderMetrics() {
+  const scored = scoreVendors();
+  const rec = recommendation(scored);
+  const host = document.getElementById("metrics");
+  host.innerHTML = "";
+  const mk = (k, v, d) => `<div class="metric"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`;
+  host.innerHTML =
+    mk("Quotations", scored.length, "3 vendors") +
+    mk("Recommended", rec ? rec.vendor.split(" ")[0] : "None", rec ? "top compliant score" : "no compliant vendor") +
+    mk("Policy-compliant", scored.filter(v => v.compliant).length + " / " + scored.length, "of 3") +
+    mk("Best score", rec ? rec.score + " / 100" : "—", rec ? rec.vendor : "review policy");
+}
+
+function renderRaw() {
+  document.getElementById("rawQuotes").innerHTML = RAW_QUOTES.map(q =>
+    `<div class="quote"><b>${q.vendor}</b>\n\n${q.received}</div>`).join("");
+}
+
+function renderCmp() {
+  const scored = scoreVendors();
+  const rec = recommendation(scored);
+  let rows = `<tr><th>Vendor</th><th class="num">Landed cost<br>(10k cartons)</th><th class="num">Lead (days)</th><th class="num">Strength (0–10)</th><th class="num">Reliability</th><th>Green</th><th class="num">Final score</th><th>Policy</th></tr>`;
+  scored.forEach(v => {
+    const hl = rec && rec.vendor === v.vendor ? " class='hl'" : "";
+    rows += `<tr${hl}>
+      <td><b>${v.vendor}</b><br><span class="small">${v.note}</span></td>
+      <td class="num">${fmt(v.cost)}</td>
+      <td class="num">${v.lead}</td>
+      <td class="num">${v.quality}</td>
+      <td class="num">${v.reliability}%</td>
+      <td>${v.green ? "♻️ yes" : "—"}</td>
+      <td class="num"><b>${v.score}</b></td>
+      <td>${v.compliant ? "<span class='pill green'>Compliant</span>" : "<span class='pill red'>Non-Compliant</span>"}</td>
+    </tr>`;
+  });
+  document.getElementById("cmpTable").innerHTML = rows;
+
+  const banner = document.getElementById("recBanner");
+  if (rec) {
+    banner.className = "banner ok";
+    banner.innerHTML = `🏆 <b>Recommended: ${rec.vendor}</b> — highest score (${rec.score}/100) among vendors meeting the ≥ ${document.getElementById("minQ").value} strength policy.`;
+  } else {
+    banner.className = "banner warn";
+    banner.innerHTML = "⚠️ No vendor currently meets the strength policy. Lower the minimum grade or re-open sourcing.";
+  }
+
+  const chart = document.getElementById("chart");
+  const maxScore = Math.max(...scored.map(v => v.score));
+  chart.innerHTML = scored.map(v => `
+    <div class="bar-row">
+      <div class="bar-lbl">${v.vendor} · ${v.score}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(v.score/maxScore*100).toFixed(1)}%"></div></div>
+    </div>`).join("");
+
+  const flags = document.getElementById("flags");
+  flags.innerHTML = scored.map(v =>
+    `<div style="margin:4px 0">${v.compliant ? "🟢" : "🔴"} <b>${v.vendor}</b> — ${v.compliant ? "Compliant" : "Below strength policy"}</div>`).join("");
+}
+
+function renderReview() {
+  const scored = scoreVendors();
+  const rec = recommendation(scored);
+  const recName = rec ? rec.vendor : scored[0].vendor;
+
+  const host = document.getElementById("recDetail");
+  if (rec) {
+    host.innerHTML = `<div class="banner ok">
+      <b>${rec.vendor}</b> — score <b>${rec.score}/100</b><br>
+      <span class="small">
+      · Strength ${rec.quality}/10 (weight ${(readWeights().quality*100).toFixed(0)}%, meets ≥ ${document.getElementById("minQ").value} policy)<br>
+      · Landed cost ${fmt(rec.cost)} vs lowest offered ${fmt(Math.min(...scored.map(v=>v.cost)))}<br>
+      · Lead ${rec.lead} days · reliability ${rec.reliability}% · ${rec.green ? "♻️ recyclable kraft / renewable mill" : "standard materials"}
+      </span></div>`;
+  } else {
+    host.innerHTML = `<div class="banner warn">No compliant vendor at current policy.</div>`;
+  }
+
+  const sel = document.getElementById("chooseVendor");
+  sel.innerHTML = scored.map(v => `<option ${v.vendor === recName ? "selected" : ""}>${v.vendor}</option>`).join("");
+
+  renderHistory();
+}
+
+function renderHistory() {
+  const h = JSON.parse(localStorage.getItem("approval_history") || "[]");
+  const t = document.getElementById("historyTable");
+  if (!h.length) { t.innerHTML = `<tr><td class="small">No decisions recorded yet — they will appear here.</td></tr>`; return; }
+  t.innerHTML = `<tr><th>Timestamp</th><th>Vendor</th><th>Action</th><th>Note</th><th>Status</th></tr>` +
+    h.map(e => `<tr><td>${e.ts}</td><td><b>${e.vendor}</b></td><td>${e.action}</td><td>${e.note || "—"}</td><td><span class="pill amber">DRAFT — Finance</span></td></tr>`).join("");
+}
+
+function stamp() {
+  const d = new Date();
+  return d.toLocaleDateString("en-GB", { day:"2-digit", month:"short", year:"numeric" }) + "  " + d.toLocaleTimeString("en-GB", { hour:"2-digit", minute:"2-digit" });
+}
+
+function recordDecision() {
+  const entry = {
+    ts: stamp(),
+    vendor: document.getElementById("chooseVendor").value,
+    action: document.getElementById("chooseAction").value,
+    note: document.getElementById("notes").value,
+  };
+  const h = JSON.parse(localStorage.getItem("approval_history") || "[]");
+  h.push(entry);
+  localStorage.setItem("approval_history", JSON.stringify(h));
+  document.getElementById("notes").value = "";
+  document.getElementById("recordMsg").innerHTML =
+    `<div class="banner info">Draft record created for <b>${entry.vendor}</b>. ⚠️ This does <b>not</b> place an order or move funds — it records intent for the Finance team, whose authorising signatory releases any purchase.</div>`;
+  renderHistory();
+}
+
+function clearHistory() {
+  localStorage.removeItem("approval_history");
+  document.getElementById("recordMsg").innerHTML = "";
+  renderHistory();
+}
+
+/* =====================================================================
+   POLICY Q&A
+   ===================================================================== */
+function ask(question) {
+  const box = document.getElementById("chatBox");
+  box.innerHTML += `<div class="msg user"><div class="who">You</div><div class="body">${question}</div></div>`;
+  const q = question.toLowerCase();
+  let ans = POLICY_FALLBACK;
+  for (const item of POLICY_KB) {
+    if (item.kw.some(k => q.includes(k))) { ans = item.a; break; }
+  }
+  ans += "<br><span class='small'>Disclosed: rule-based answer from a local policy knowledge base — swap for an LLM in production.</span>";
+  box.innerHTML += `<div class="msg"><div class="who">Assistant</div><div class="body">${ans}</div></div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+function askPolicy() {
+  const input = document.getElementById("chatInput");
+  const q = input.value.trim();
+  if (!q) return;
+  input.value = "";
+  ask(q);
+}
+
+/* =====================================================================
+   EXTRAS — emails, PDF, quote parser
+   ===================================================================== */
+function clarificationEmail(vendor, template) {
+  const tpl = {
+    shipping: `Dear ${vendor} Procurement Team,
+
+Following your quotation for our corrugated carton requirement (10,000 heavy-duty cartons), please clarify:
+  1. Is the quoted price inclusive of GST and all freight/delivery charges?
+  2. On what incoterm (EXW / CIF / DDP) is the price valid?
+  3. What is the final landed cost per 1,000 cartons?
+
+Kindly confirm so we can complete a fair comparison.
+
+Regards,
+PackRight Manufacturing — Procurement`,
+    lead: `Hi ${vendor},
+
+Could you confirm the firm delivery lead time in calendar days from purchase order to our Nashik plant, including any permits or customs?
+
+Regards,
+PackRight Manufacturing — Procurement`,
+    discount: `Hi ${vendor},
+
+Your quoted landed price is above the average of the responsive quotations. Could you offer a revised commercial or a volume discount for this seasonal requirement?
+
+Regards,
+PackRight Manufacturing — Procurement`,
+  };
+  return tpl[template] || tpl.shipping;
+}
+
+function renderEmails() {
+  const rec = recommendation(scoreVendors());
+  const recName = rec ? rec.vendor : null;
+  const targets = VENDORS.filter(v => v.vendor !== recName);
+  const host = document.getElementById("emailList");
+  host.innerHTML = targets.map(v => `
+    <div style="margin-bottom:10px">
+      <b>${v.vendor}</b>
+      <div class="flex" style="margin-top:4px">
+        <button class="btn ghost" onclick="email(this, '${v.vendor}', 'shipping')">Cost / GST</button>
+        <button class="btn ghost" onclick="email(this, '${v.vendor}', 'lead')">Lead time</button>
+        <button class="btn ghost" onclick="email(this, '${v.vendor}', 'discount')">Discount</button>
+      </div>
+      <pre id="mail_${v.vendor.replace(/\s+/g,'_')}" class="quote" style="display:none"></pre>
+    </div>`).join("");
+}
+
+function email(btn, vendor, tpl) {
+  const pre = document.getElementById("mail_" + vendor.replace(/\s+/g, "_"));
+  pre.textContent = clarificationEmail(vendor, tpl);
+  pre.style.display = "block";
+}
+
+/* ---- quote parser (lightweight, demonstrates standardisation) ---- */
+function parseQuoteText(text) {
+  const lower = (text || "").toLowerCase();
+  const f = {};
+  if ((lower.includes("usd") || lower.includes("$")) && !lower.includes("inr")) f.currency = "USD — needs conversion to INR";
+  else if (["inr","rs ","rs.","₹"].some(x => lower.includes(x))) f.currency = "INR";
+  else f.currency = "ambiguous";
+
+  if (lower.includes("inclus")) f.gst = "tax included";
+  else if (lower.includes("gst") || lower.includes("extra")) f.gst = "GST (18%) must be added";
+  else f.gst = "not stated — assume ex-tax";
+
+  const m = lower.match(/(\d{1,3})\s*(?:business\s*)?days/);
+  f.lead_time_days = m ? +m[1] : "not stated";
+
+  const g = lower.match(/grade\s*([aA\+\-bB0-9]+)/);
+  f.grade = g ? g[1].toUpperCase() : "not stated";
+
+  return f;
+}
+
+function parsePasted() {
+  const area = document.getElementById("pasteArea");
+  const text = area.value.trim();
+  const result = document.getElementById("parseResult");
+  if (!text) { result.innerHTML = `<div class="banner warn">Paste some quotation text first.</div>`; return; }
+  const f = parseQuoteText(text);
+  result.innerHTML = `<div class="banner ok">Standardised fields:</div><pre class="quote">${JSON.stringify(f, null, 2)}</pre>`;
+}
+
+/* ---- pdf.js (client-side) ---- */
+const fileInput = document.getElementById("pdfFile");
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files[0];
+  const out = document.getElementById("pdfText");
+  const btn = document.getElementById("parsePdfBtn");
+  if (!file) return;
+  try {
+    const { getDocument } = await import("https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.min.mjs");
+    const buf = await file.arrayBuffer();
+    const pdf = await getDocument({ data: buf }).promise;
+    let text = "";
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const tc = await page.getTextContent();
+      text += tc.items.map(it => it.str).join(" ") + "\n";
+    }
+    out.textContent = text.slice(0, 1200) || "No text layer found.";
+    out.style.display = "block";
+    btn.style.display = "inline-block";
+    document.getElementById("pasteArea").value = text;
+  } catch (e) {
+    out.textContent = "Could not read PDF: " + e.message;
+    out.style.display = "block";
+  }
+});
+
+/* =====================================================================
+   BOOTSTRAP
+   ===================================================================== */
+document.querySelectorAll(".tabs button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach(b => b.classList.remove("active"));
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.tab).classList.add("active");
+  });
+});
+
+const suggestPills = document.getElementById("suggestPills");
+[
+  "What is our policy on international vendors?",
+  "What burst-strength grade must vendors meet?",
+  "How does the approval / override work?",
+  "Do you prefer green / recyclable suppliers?",
+  "How is USD pricing converted?",
+].forEach(s => {
+  const b = document.createElement("button");
+  b.className = "btn ghost";
+  b.style.marginBottom = "6px";
+  b.textContent = s;
+  b.onclick = () => ask(s);
+  suggestPills.appendChild(b);
+});
+
+renderWeights();
+renderEmails();
+refresh();
+</script>
+</body>
+</html>
