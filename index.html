@@ -131,6 +131,26 @@
   .small { font-size: 12px; color: var(--muted); }
   code { background: #EEF3F9; padding: 1px 5px; border-radius: 5px; font-size: 12px; }
   .nojs { display: none; }
+
+  /* pipeline */
+  .pipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 10px; margin-top: 8px; }
+  .pipe .step { background: #FBFDFF; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 10px; padding: 10px 12px; }
+  .pipe .step .n { font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: .5px; }
+  .pipe .step .t { font-weight: 700; color: var(--navy); font-size: 13.5px; margin: 2px 0; }
+  .pipe .step .d { font-size: 12px; color: var(--muted); }
+
+  /* profile cards */
+  .profcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+  .profcard .hd { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
+  .avatar { width: 46px; height: 46px; border-radius: 12px; background: linear-gradient(135deg, var(--teal), var(--teal-2)); color: #fff; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+  .profcard .nm { font-weight: 800; color: var(--navy); font-size: 15px; }
+  .profcard .stars { color: var(--amber); font-size: 13px; letter-spacing: 2px; }
+  .lbl { font-size: 11px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .5px; margin: 8px 0 3px; }
+  .profcard .desc { font-size: 12.5px; color: var(--muted); }
+  .chip { display: inline-block; background: #E7F2FB; color: #1D4E7A; border-radius: 6px; font-size: 11px; font-weight: 600; padding: 2px 8px; margin: 2px 4px 2px 0; }
+  .chip.risk { background: #FDEAEA; color: var(--red); }
+  .kv { font-size: 12.5px; color: var(--muted); }
+  .kv b { color: var(--navy); }
 </style>
 </head>
 <body>
@@ -169,24 +189,35 @@
     <button class="active" data-tab="t1">1 · Overview</button>
     <button data-tab="t2">2 · Raw quotations</button>
     <button data-tab="t3">3 · Standardised comparison</button>
-    <button data-tab="t4">4 · Review &amp; approve</button>
-    <button data-tab="t5">5 · Policy assistant</button>
-    <button data-tab="t6">6 · Extras (PDF, emails)</button>
+    <button data-tab="t4">4 · Vendor profiles</button>
+    <button data-tab="t5">5 · Review &amp; approve</button>
+    <button data-tab="t6">6 · Policy assistant</button>
+    <button data-tab="t7">7 · Extras (PDF, emails)</button>
   </div>
 
   <!-- TAB 1 -->
   <section class="tab active" id="t1">
     <div class="panel">
       <h2>The problem</h2>
-      <p class="sub">PackRight Manufacturing buys corrugated cartons and packaging materials every season. Quotations arrive in completely different formats — one vendor quotes INR all-inclusive, another quotes USD with freight on top, a third quotes ex-works without GST. Comparing them manually takes hours and is error-prone.</p>
-      <h2>What this assistant does</h2>
+      <p class="sub">PackRight Manufacturing buys corrugated cartons and packaging materials every season. Quotations arrive in completely different formats — one vendor quotes INR all-inclusive, another quotes USD with freight on top, a third quotes ex-works without GST. Comparing them manually takes hours, hides costs, and is error-prone.</p>
+
+      <h2>How it works — the decision pipeline</h2>
+      <div id="pipeline"></div>
+
+      <h2 style="margin-top:16px">What this assistant does</h2>
       <div class="small" style="line-height:2">
         · <b>Standardises</b> every quote into one table (landed-cost INR incl. GST + freight, lead-time days, burst-strength grade 0–10).<br>
         · <b>Compares</b> vendors on weighted criteria you control (Quality, Cost, Lead Time, Reliability).<br>
         · <b>Enforces policy</b> — below minimum strength grade = flagged and excluded, whatever the price.<br>
+        · <b>Profiles</b> each vendor — certifications, risk register and sustainability footprint.<br>
         · <b>Recommends</b> one vendor with transparent reasoning, then <b>you hold the final word</b> (review / override).<br>
         · <b>Never moves money</b> — output is always a draft approval record for the Finance team.
       </div>
+
+      <h2 style="margin-top:16px">Where does the AI add value?</h2>
+      <p class="sub">Generative AI is used for the messy, human part — reading unformatted PDFs, writing emails, answering policy in plain language. The scoring itself is deterministic (no hidden AI) so every number can be audited and reproduced.</p>
+      <div style="overflow-x:auto"><table id="aiTable" style="margin-top:6px"></table></div>
+
       <h2 style="margin-top:14px">Why these criteria?</h2>
       <div class="metrics" style="margin-top:8px">
         <div class="metric"><div class="k">Quality / strength</div><div class="v">40%</div><div class="d">burst resistance — non-negotiable</div></div>
@@ -229,6 +260,18 @@
   <!-- TAB 4 -->
   <section class="tab" id="t4">
     <div class="panel">
+      <h2>Vendor profiles</h2>
+      <p class="sub">A closer look at each supplier — certifications, rating, footprint and a risk register, so the human approver has context beyond the score.</p>
+      <div id="profileCards" class="grid" style="grid-template-columns: repeat(auto-fit, minmax(330px,1fr)); margin-top:8px"></div>
+      <h2 style="margin-top:18px">Sustainability &amp; ESG footprint</h2>
+      <div style="overflow-x:auto"><table id="esgTable" style="margin-top:6px"></table></div>
+      <div class="banner info" id="esgNote"></div>
+    </div>
+  </section>
+
+  <!-- TAB 5 -->
+  <section class="tab" id="t5">
+    <div class="panel">
       <h2>Recommendation</h2>
       <div id="recDetail"></div>
       <div class="banner warn">You hold the final word. Nothing here places an order or moves funds — it records your <b>intent</b> for the Finance team.</div>
@@ -250,8 +293,8 @@
     </div>
   </section>
 
-  <!-- TAB 5 -->
-  <section class="tab" id="t5">
+  <!-- TAB 6 -->
+  <section class="tab" id="t6">
     <div class="panel">
       <h2>Procurement policy Q&amp;A</h2>
       <p class="sub">Disclosed, rule-based assistant (no hidden LLM). Ask about pricing, strength, lead times, imports, green suppliers or approvals.</p>
@@ -264,8 +307,8 @@
     </div>
   </section>
 
-  <!-- TAB 6 -->
-  <section class="tab" id="t6">
+  <!-- TAB 7 -->
+  <section class="tab" id="t7">
     <div class="panel">
       <h2>Extras &amp; extensions</h2>
 
@@ -343,17 +386,24 @@ Manual documentation; some prior delivery delays reported.`
 const VENDORS = [
   {
     vendor: "CorrLite Packaging",
+    code: "CL",
     cost: 485000,          // INR all-inclusive
     lead: 5,               // days
     quality: 9,            // burst-strength grade 0-10
     reliability: 95,       // %
     green: true,
     dist: 55,              // km to plant
-    cert: "ISO 9001 · Grade A · recyclable",
+    cert: "ISO 9001 · Grade A · recyclable kraft",
+    rating: 4.6,
+    years: 9,
+    sufficiency: { recycled: 92, energy: "Wind + solar (net-zero)", co2Per100: 9, waterPer100: 3.1 },
+    profile: "Large domestic producer using recycled kraft from Haryana mills. Delivery depot 55 km from the Nashik plant keeps freight low and stock available at short notice.",
+    risks: ["Seasonal kraft price volatility", "Single primary mill", "Grades A- only for very high GSM orders"],
     note: "INR all-inclusive incl. GST + delivery. Green mill bonus eligible."
   },
   {
     vendor: "EuroCarton Works",
+    code: "EU",
     cost: 654192,          // USD 6,600 @ 84 + IGST 18%
     lead: 18,
     quality: 10,
@@ -361,10 +411,16 @@ const VENDORS = [
     green: false,
     dist: 240,
     cert: "ISO 9001 · BIS · Grade A+ (imported)",
+    rating: 4.9,
+    years: 12,
+    sufficiency: { recycled: 70, energy: "Import only (no green credit)", co2Per100: 21, waterPer100: 4.2 },
+    profile: "European export mill with the highest burst spec (A+). Premium consistency and reliability, but a 240 km leg and 18-day import lead tie up working capital.",
+    risks: ["Import FX volatility", "Long lead ties up stock", "Higher freight emissions (21 kg CO2e / 1,000)"],
     note: "USD + freight converted to landed INR at budget FX (1 USD = 84 INR) + 18% IGST."
   },
   {
     vendor: "PackDesk Supplies",
+    code: "PD",
     cost: 495600,          // 420,000 ex-works + 18% GST
     lead: 8,
     quality: 6,
@@ -372,6 +428,11 @@ const VENDORS = [
     green: false,
     dist: 180,
     cert: "Grade B · manual documentation",
+    rating: 3.6,
+    years: 4,
+    sufficiency: { recycled: 40, co2Per100: 15, waterPer100: 5.4 },
+    profile: "Regional economy producer with low entry pricing. Strength index (6/10) sits below our 900 kPa spec, and deliveries are monitored manually.",
+    risks: ["Fails burst-strength policy", "Below spec for heavy loads", "Manual weighing / QA"],
     note: "Ex-works price with GST added separately -> adjusted to GST-inclusive total."
   },
 ];
@@ -474,7 +535,7 @@ function refresh() {
     const el = document.getElementById("wv_" + k);
     if (el) el.textContent = document.getElementById("w_" + k).value + "%";
   });
-  renderMetrics(); renderRaw(); renderCmp(); renderReview();
+  renderMetrics(); renderRaw(); renderCmp(); renderReview(); renderOverview();
 }
 
 function renderMetrics() {
@@ -549,7 +610,11 @@ function renderReview() {
       · Strength ${rec.quality}/10 (weight ${(readWeights().quality*100).toFixed(0)}%, meets ≥ ${document.getElementById("minQ").value} policy)<br>
       · Landed cost ${fmt(rec.cost)} vs lowest offered ${fmt(Math.min(...scored.map(v=>v.cost)))}<br>
       · Lead ${rec.lead} days · reliability ${rec.reliability}% · ${rec.green ? "♻️ recyclable kraft / renewable mill" : "standard materials"}
-      </span></div>`;
+      </span></div>
+      <h2 style="margin-top:14px">Why this vendor? (explainable reasoning)</h2>
+      <div style="overflow-x:auto"><table id="whyTable"></table></div>
+      <div class="banner info" id="sensNote"></div>`;
+    renderWhy(rec, scored);
   } else {
     host.innerHTML = `<div class="banner warn">No compliant vendor at current policy.</div>`;
   }
@@ -560,12 +625,149 @@ function renderReview() {
   renderHistory();
 }
 
+/* Per-criterion sub-score matrix + plain-language "why" */
+function renderWhy(rec, scored) {
+  const w = readWeights();
+  const label = { q: "Quality / strength", invCost: "Cost", invLead: "Lead time", r: "Reliability" };
+  const crits = ["invCost", "invLead", "q", "r"];
+  const keys = ["cost", "lead", "quality", "reliability"];
+  const rows = [`<tr><th>Criterion</th><th>Weight</th>${scored.map(v => `<th class="num">${v.vendor.split(" ")[0]}</th>`).join("")}</tr>`];
+  crits.forEach((c, i) => {
+    rows.push(`<tr>
+      <td><b>${label[c]}</b>${c === "q" ? `<br><span class="small">${rec.quality}/10</span>` : ""}</td>
+      <td>${(w[keys[i]] * 100).toFixed(0)}%</td>
+      ${scored.map(v => `<td class="num">${(v[c] * 100).toFixed(0)}</td>`).join("")}
+    </tr>`);
+  });
+  rows.push(`<tr><td><b>Final score</b></td><td>100%</td>${scored.map(v => `<td class="num"><b>${v.score}</b></td>`).join("")}</tr>`);
+  document.getElementById("whyTable").innerHTML = rows.join("");
+
+  const sens = document.getElementById("sensNote");
+  sens.innerHTML = "🔍 <b>What-if sensitivity:</b> " + sensitivityNote();
+}
+
 function renderHistory() {
   const h = JSON.parse(localStorage.getItem("approval_history") || "[]");
   const t = document.getElementById("historyTable");
   if (!h.length) { t.innerHTML = `<tr><td class="small">No decisions recorded yet — they will appear here.</td></tr>`; return; }
   t.innerHTML = `<tr><th>Timestamp</th><th>Vendor</th><th>Action</th><th>Note</th><th>Status</th></tr>` +
     h.map(e => `<tr><td>${e.ts}</td><td><b>${e.vendor}</b></td><td>${e.action}</td><td>${e.note || "—"}</td><td><span class="pill amber">DRAFT — Finance</span></td></tr>`).join("");
+}
+
+/* =====================================================================
+   OVERVIEW — pipeline + AI-vs-deterministic + vendor profiles + ESG
+   ===================================================================== */
+const PIPELINE = [
+  { n: "Step 1", t: "Ingest", d: "Collect quotes from email / PDF / pasted text — in any currency & convention." },
+  { n: "Step 2", t: "Standardise", d: "Normalise to one table: landed INR incl. GST+freight, lead days, strength grade." },
+  { n: "Step 3", t: "Score", d: "Weighted 0–100 across Quality, Cost, Lead Time, Reliability — fully reproducible." },
+  { n: "Step 4", t: "Policy check", d: "Enforce the strength floor; flag & exclude Non-Compliant vendors." },
+  { n: "Step 5", t: "Recommend", d: "Pick the best compliant vendor with an explainable rationale." },
+  { n: "Step 6", t: "Human review", d: "Approve or override, then log a draft for Finance. No funds move." },
+];
+
+const AI_TABLE = [
+  ["Task", "Approach", "Why"],
+  ["Reading unformatted quotes & PDFs", "Generative AI / OCR (client-side)", "Handles free-form invoices, currencies & layouts no rule can predict"],
+  ["Drafting clarification emails", "Templated Gen-AI copy", "Consistent, professional tone; quick to regenerate per vendor"],
+  ["Policy Q&A in plain language", "Disclosed rule-based assistant", "Deterministic answers, no hallucination risk; LLM-pluggable"],
+  ["Vendor scoring & recommendation", "Deterministic weighted math", "Auditable & reproducible — the decision must be defensible"],
+  ["Final approval & funds", "Human sign-off only", "Accountability; the system is not allowed to commit spend"],
+];
+
+function renderOverview() {
+  document.getElementById("pipeline").innerHTML =
+    `<div class="pipe">` + PIPELINE.map(s =>
+      `<div class="step"><div class="n">${s.n}</div><div class="t">${s.t}</div><div class="d">${s.d}</div></div>`).join("") + `</div>`;
+
+  document.getElementById("aiTable").innerHTML = AI_TABLE.map((r, i) =>
+    i === 0
+      ? `<tr><th>Task</th><th>Approach</th><th>Why</th></tr>`
+      : `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td></tr>`).join("");
+
+  const scored = scoreVendors();
+  renderProfiles(scored);
+}
+
+function stars(r) {
+  const full = Math.floor(r), half = r - full >= 0.5 ? 1 : 0;
+  return "★".repeat(full) + (half ? "½" : "") + "<span style='opacity:.3'>" + "★".repeat(5 - full - half) + "</span> " + r;
+}
+
+function renderProfiles(scored) {
+  const host = document.getElementById("profileCards");
+  if (!host) return;
+  host.innerHTML = VENDORS.map(v => {
+    const s = scored.find(x => x.vendor === v.vendor);
+    const certs = v.cert.split(" · ");
+    const risks = (Array.isArray(v.risks) ? v.risks : [v.risks]).map(r => `<span class="chip risk">⚠ ${r}</span>`).join("");
+    return `<div class="profcard">
+      <div class="hd">
+        <div class="avatar">${v.code}</div>
+        <div>
+          <div class="nm">${v.vendor}</div>
+          <div class="stars">${stars(v.rating)}</div>
+          <div class="small">${v.years} yrs supplying · ${v.dist} km · score <b>${s.score}</b></div>
+        </div>
+      </div>
+      <div class="lbl">Certifications</div>
+      <div>${certs.map(c => `<span class="chip">${c}</span>`).join("")}</div>
+      <div class="lbl">Profile</div>
+      <div class="desc">${v.profile}</div>
+      <div class="lbl">Risk register</div>
+      <div>${risks || "<span class='small'>—</span>"}</div>
+      <div class="lbl">Standardisation</div>
+      <div class="desc">${v.note}</div>
+    </div>`;
+  }).join("");
+
+  const esg = document.getElementById("esgTable");
+  if (esg) {
+    esg.innerHTML = `<tr><th>Vendor</th><th>Recycled fibre</th><th>CO₂e / 1,000 cartons</th><th>Water / 1,000</th><th>Energy source</th><th>Green bonus</th></tr>` +
+      VENDORS.map(v => {
+        const s = v.sufficiency || {};
+        const bonus = v.green ? (document.getElementById("greenB").value) : 0;
+        return `<tr><td><b>${v.vendor}</b></td>
+          <td>${s.recycled ?? "—"}%</td>
+          <td>${s.co2Per100 ?? "—"} kg</td>
+          <td>${s.waterPer100 ?? "—"} m³</td>
+          <td>${s.energy ?? "—"}</td>
+          <td>${v.green ? `<span class="pill green">+${bonus}</span>` : "—"}</td></tr>`;
+      }).join("");
+  }
+  const note = document.getElementById("esgNote");
+  if (note) {
+    note.innerHTML = "🌱 <b>ESG context:</b> PackRight targets 80% recyclable packaging by 2027. A small green bonus (up to +5, editable in the sidebar) rewards recyclable-kraft / renewable-energy mills, but sustainability is reported separately from the core commercial score so the two never blur.";
+  }
+}
+
+/* =====================================================================
+   WHAT-IF / SENSITIVITY — how much must a weight change to flip the winner?
+   ===================================================================== */
+function sensitivityNote() {
+  const scored = scoreVendors();
+  const rec = recommendation(scored);
+  if (!rec) return "";
+  const rivals = scored.filter(v => v.compliant && v.vendor !== rec.vendor);
+  if (!rivals.length) return "";
+  const rival = rivals[0];
+  const w = readWeights();
+  const margin = rec.score - rival.score;
+  const critLabels = { quality: "Quality", cost: "Cost", lead: "Lead Time", reliability: "Reliability" };
+  const flips = [];
+  Object.keys(w).forEach(k => {
+    const dw = w[k];
+    const otherW = 1 - dw;
+    const crit = k === "cost" ? "invCost" : k === "lead" ? "invLead" : k === "quality" ? "q" : "r";
+    const diffCrit = (rival[crit] - rec[crit]);
+    if (Math.abs(diffCrit) > 0.0001) {
+      const move = margin / (otherW * diffCrit);
+      flips.push({ k, pct: Math.round(move * 100) });
+    }
+  });
+  const best = flips.sort((a, b) => a.pct - b.pct)[0];
+  if (!best || best.pct > 200) return `Current winner <b>${rec.vendor}</b> holds a ${margin.toFixed(1)}-point lead over ${rival.vendor}. The ranking is stable — no single criterion can realistically flip it.`;
+  return `Current winner <b>${rec.vendor}</b> leads ${rival.vendor} by ${margin.toFixed(1)} points. The most sensitive lever is <b>${critLabels[best.k]}</b> — raising its weight to ≈${best.pct}% while re-balancing the others would flip the recommendation to <b>${rival.vendor}</b>.`;
 }
 
 function stamp() {
