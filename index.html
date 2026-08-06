@@ -32,7 +32,7 @@
     color: #fff;
     padding: 22px 28px 18px;
   }
-  header .wrap { max-width: 1180px; margin: 0 auto; }
+  header .wrap { max-width: 1600px; margin: 0 auto; }
   header h1 { font-size: 26px; letter-spacing: .3px; }
   header p { color: #BFD9E6; font-size: 14px; margin-top: 4px; }
   header .badge {
@@ -40,7 +40,14 @@
     border: 1px solid rgba(255,255,255,.25); padding: 3px 12px; border-radius: 20px;
     font-size: 12px; color: #E8F4FF;
   }
-  main { max-width: 1180px; margin: 22px auto 60px; padding: 0 18px; }
+  main { max-width: 1560px; margin: 12px auto 60px; padding: 0 16px; }
+
+  .layout { display: grid; grid-template-columns: 320px 1fr; gap: 18px; max-width: 1600px; margin: 0 auto; }
+  .layout > .sidebar { position: sticky; top: 12px; align-self: start; }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+    .layout > .sidebar { position: static; }
+  }
 
   /* sidebar-ish controls row */
   .panel {
@@ -157,36 +164,53 @@
 </header>
 
 <main>
-  <noscript><div class="banner warn">This tool needs JavaScript enabled in your browser to run.</div></noscript>
+  <div class="layout">
+    <div class="sidebar">
+      <noscript><div class="banner warn">This tool needs JavaScript enabled in your browser to run.</div></noscript>
 
-  <!-- Metrics -->
-  <div class="metrics" id="metrics"></div>
+      <!-- Sidebar: weights / policy controls -->
+      <div class="panel">
+        <h2>⚖️ Decision criteria</h2>
+        <div class="sub">Editable live — weights are normalised to 100%.</div>
+        <div class="crit-grid" id="weights"></div>
+        <div class="sub" style="margin-top:10px">Minimum burst-strength grade (0–10)</div>
+        <input type="range" id="minQ" min="0" max="10" step="1" value="8" style="width:100%" oninput="refresh()">
+        <span class="small">current: <b id="minQv">8</b></span>
+        <div class="sub" style="margin-top:14px">Green / recyclable bonus (0–5)</div>
+        <input type="range" id="greenB" min="0" max="5" step="0.5" value="0" style="width:100%" oninput="refresh()">
+        <span class="small">current: <b id="greenBv">0.0</b></span>
+      </div>
 
-  <!-- Weights / policy panel -->
-  <div class="panel">
-    <h2>⚖️ Decision criteria (edit live)</h2>
-    <div class="sub">Weights are normalised to 100%. Green bonus adds up to +5 for recyclable / renewable-energy manufacturers.</div>
-    <div class="crit-grid" id="weights"></div>
-    <div class="flex" style="margin-top:12px">
-      <label style="margin:0 8px 0 0">Min burst-strength grade (0–10):</label>
-      <input type="range" id="minQ" min="0" max="10" step="1" value="8" style="max-width:220px" oninput="refresh()">
-      <span class="small" id="minQv">8</span>
-      <label style="margin:0 8px 0 18px">Green/recyclable bonus (0–5):</label>
-      <input type="range" id="greenB" min="0" max="5" step="0.5" value="0" style="max-width:220px" oninput="refresh()">
-      <span class="small" id="greenBv">0.0</span>
+      <div class="panel">
+        <h2>ℹ️ About this tool</h2>
+        <div class="small" style="line-height:1.7">
+          <b>PackRight Manufacturing</b> — Procurement — buys 10,000 heavy-duty corrugated cartons per season.
+          Three fictional vendors, three different pricing formats, normalised into one auditable comparison.
+        </div>
+        <div class="small" style="line-height:1.7; margin-top:8px">
+          ✅ Standardises quotes to landed INR incl. GST + freight<br>
+          ✅ Weighted scoring (fully deterministic &amp; reproducible)<br>
+          ✅ Policy check flags &amp; excludes sub-strength vendors<br>
+          ✅ Human-in-the-loop review — you decide<br>
+          🔒 Recommends only — never moves money
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="active" data-tab="t1">1 · Overview</button>
-    <button data-tab="t2">2 · Raw quotations</button>
-    <button data-tab="t3">3 · Standardised comparison</button>
-    <button data-tab="t4">4 · Vendor profiles</button>
-    <button data-tab="t5">5 · Review &amp; approve</button>
-    <button data-tab="t6">6 · Policy assistant</button>
-    <button data-tab="t7">7 · Email vendor</button>
-    <button data-tab="t8">8 · Extras (PDF, emails)</button>
+    <div>
+      <!-- Metrics -->
+      <div class="metrics" id="metrics"></div>
+
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="active" data-tab="t1">1 · Overview</button>
+        <button data-tab="t2">2 · Raw quotations</button>
+        <button data-tab="t3">3 · Standardised comparison</button>
+        <button data-tab="t4">4 · Vendor profiles</button>
+        <button data-tab="t5">5 · Review &amp; approve</button>
+        <button data-tab="t6">6 · Policy assistant</button>
+        <button data-tab="t7">7 · Email vendor</button>
+        <button data-tab="t8">8 · Extras (PDF, emails)</button>
   </div>
 
   <!-- TAB 1 -->
@@ -350,6 +374,8 @@
       </details>
     </div>
   </section>
+    </div>
+  </div>
 </main>
 
 <footer>
