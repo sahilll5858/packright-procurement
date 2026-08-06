@@ -132,13 +132,6 @@
   code { background: #EEF3F9; padding: 1px 5px; border-radius: 5px; font-size: 12px; }
   .nojs { display: none; }
 
-  /* pipeline */
-  .pipe { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px,1fr)); gap: 10px; margin-top: 8px; }
-  .pipe .step { background: #FBFDFF; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 10px; padding: 10px 12px; }
-  .pipe .step .n { font-size: 11px; font-weight: 800; color: var(--teal); text-transform: uppercase; letter-spacing: .5px; }
-  .pipe .step .t { font-weight: 700; color: var(--navy); font-size: 13.5px; margin: 2px 0; }
-  .pipe .step .d { font-size: 12px; color: var(--muted); }
-
   /* profile cards */
   .profcard { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
   .profcard .hd { display: flex; gap: 12px; align-items: center; border-bottom: 1px solid var(--line); padding-bottom: 10px; }
@@ -192,7 +185,8 @@
     <button data-tab="t4">4 · Vendor profiles</button>
     <button data-tab="t5">5 · Review &amp; approve</button>
     <button data-tab="t6">6 · Policy assistant</button>
-    <button data-tab="t7">7 · Extras (PDF, emails)</button>
+    <button data-tab="t7">7 · Email vendor</button>
+    <button data-tab="t8">8 · Extras (PDF, emails)</button>
   </div>
 
   <!-- TAB 1 -->
@@ -201,22 +195,14 @@
       <h2>The problem</h2>
       <p class="sub">PackRight Manufacturing buys corrugated cartons and packaging materials every season. Quotations arrive in completely different formats — one vendor quotes INR all-inclusive, another quotes USD with freight on top, a third quotes ex-works without GST. Comparing them manually takes hours, hides costs, and is error-prone.</p>
 
-      <h2>How it works — the decision pipeline</h2>
-      <div id="pipeline"></div>
-
-      <h2 style="margin-top:16px">What this assistant does</h2>
+      <h2>What this assistant does</h2>
       <div class="small" style="line-height:2">
         · <b>Standardises</b> every quote into one table (landed-cost INR incl. GST + freight, lead-time days, burst-strength grade 0–10).<br>
         · <b>Compares</b> vendors on weighted criteria you control (Quality, Cost, Lead Time, Reliability).<br>
         · <b>Enforces policy</b> — below minimum strength grade = flagged and excluded, whatever the price.<br>
-        · <b>Profiles</b> each vendor — certifications, risk register and sustainability footprint.<br>
         · <b>Recommends</b> one vendor with transparent reasoning, then <b>you hold the final word</b> (review / override).<br>
         · <b>Never moves money</b> — output is always a draft approval record for the Finance team.
       </div>
-
-      <h2 style="margin-top:16px">Where does the AI add value?</h2>
-      <p class="sub">Generative AI is used for the messy, human part — reading unformatted PDFs, writing emails, answering policy in plain language. The scoring itself is deterministic (no hidden AI) so every number can be audited and reproduced.</p>
-      <div style="overflow-x:auto"><table id="aiTable" style="margin-top:6px"></table></div>
 
       <h2 style="margin-top:14px">Why these criteria?</h2>
       <div class="metrics" style="margin-top:8px">
@@ -309,6 +295,36 @@
 
   <!-- TAB 7 -->
   <section class="tab" id="t7">
+    <div class="panel">
+      <h2>✉️ Email a vendor</h2>
+      <p class="sub">Pick a supplier and a purpose — the assistant drafts a professional message you can send straight from your email app. Nothing is sent by this page; it just prepares the mail.</p>
+
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); margin-top:8px">
+        <div><label>Vendor</label><select id="mailVendor"></select></div>
+        <div><label>Purpose / template</label><select id="mailPurpose">
+          <option value="rfq">Request a quotation (RFQ)</option>
+          <option value="shipping">Clarify cost, GST &amp; freight</option>
+          <option value="lead">Confirm delivery lead time</option>
+          <option value="discount">Request a volume discount</option>
+        </select></div>
+        <div><label>Your email (To)</label><input type="email" id="mailTo" placeholder="vendor@email.com"></div>
+      </div>
+
+      <div style="margin-top:12px"><label>Subject</label><input type="text" id="mailSubject" readonly></div>
+      <div style="margin-top:10px"><label>Message (editable)</label><textarea id="mailBody" style="min-height:170px"></textarea></div>
+
+      <div class="flex" style="margin-top:14px">
+        <button class="btn" onclick="sendEmail()">📤 Send email</button>
+        <button class="btn ghost" onclick="copyEmail()">Copy to clipboard</button>
+        <button class="btn ghost" onclick="refreshMailDraft()">Reset draft</button>
+      </div>
+      <div id="mailMsg"></div>
+      <div class="banner info" style="margin-top:12px">💡 The <b>Send email</b> button opens your device's email app (or Gmail/Outlook web) with the draft pre-filled using a <code>mailto:</code> link. No backend or API is required — the page never stores or transmits your mail.</div>
+    </div>
+  </section>
+
+  <!-- TAB 8 -->
+  <section class="tab" id="t8">
     <div class="panel">
       <h2>Extras &amp; extensions</h2>
 
@@ -655,36 +671,9 @@ function renderHistory() {
 }
 
 /* =====================================================================
-   OVERVIEW — pipeline + AI-vs-deterministic + vendor profiles + ESG
+   OVERVIEW — vendor profiles + ESG
    ===================================================================== */
-const PIPELINE = [
-  { n: "Step 1", t: "Ingest", d: "Collect quotes from email / PDF / pasted text — in any currency & convention." },
-  { n: "Step 2", t: "Standardise", d: "Normalise to one table: landed INR incl. GST+freight, lead days, strength grade." },
-  { n: "Step 3", t: "Score", d: "Weighted 0–100 across Quality, Cost, Lead Time, Reliability — fully reproducible." },
-  { n: "Step 4", t: "Policy check", d: "Enforce the strength floor; flag & exclude Non-Compliant vendors." },
-  { n: "Step 5", t: "Recommend", d: "Pick the best compliant vendor with an explainable rationale." },
-  { n: "Step 6", t: "Human review", d: "Approve or override, then log a draft for Finance. No funds move." },
-];
-
-const AI_TABLE = [
-  ["Task", "Approach", "Why"],
-  ["Reading unformatted quotes & PDFs", "Generative AI / OCR (client-side)", "Handles free-form invoices, currencies & layouts no rule can predict"],
-  ["Drafting clarification emails", "Templated Gen-AI copy", "Consistent, professional tone; quick to regenerate per vendor"],
-  ["Policy Q&A in plain language", "Disclosed rule-based assistant", "Deterministic answers, no hallucination risk; LLM-pluggable"],
-  ["Vendor scoring & recommendation", "Deterministic weighted math", "Auditable & reproducible — the decision must be defensible"],
-  ["Final approval & funds", "Human sign-off only", "Accountability; the system is not allowed to commit spend"],
-];
-
 function renderOverview() {
-  document.getElementById("pipeline").innerHTML =
-    `<div class="pipe">` + PIPELINE.map(s =>
-      `<div class="step"><div class="n">${s.n}</div><div class="t">${s.t}</div><div class="d">${s.d}</div></div>`).join("") + `</div>`;
-
-  document.getElementById("aiTable").innerHTML = AI_TABLE.map((r, i) =>
-    i === 0
-      ? `<tr><th>Task</th><th>Approach</th><th>Why</th></tr>`
-      : `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td></tr>`).join("");
-
   const scored = scoreVendors();
   renderProfiles(scored);
 }
@@ -876,6 +865,82 @@ function email(btn, vendor, tpl) {
   pre.style.display = "block";
 }
 
+/* =====================================================================
+   EMAIL A VENDOR (mailto) tab — drafts & sends via the device email app
+   ===================================================================== */
+const MAIL_SUBJECTS = {
+  rfq: "Request for Quotation — 10,000 Corrugated Cartons",
+  shipping: "Clarification — Price, GST & Freight (Quotation Review)",
+  lead: "Confirmation — Delivery Lead Time",
+  discount: "Volume Discount Request — Corrugated Cartons",
+};
+const MAIL_EMAILS = {
+  "CorrLite Packaging": "sales@corrlightepkg.in",
+  "EuroCarton Works": "quotes@eurocarton.works",
+  "PackDesk Supplies": "sales@packdesk.co.in",
+};
+
+function refreshMailDraft() {
+  const vendor = document.getElementById("mailVendor").value;
+  const purpose = document.getElementById("mailPurpose").value;
+  document.getElementById("mailSubject").value = MAIL_SUBJECTS[purpose];
+  document.getElementById("mailBody").value = buildMailDraft(vendor, purpose);
+  document.getElementById("mailMsg").innerHTML = "";
+}
+
+function buildMailDraft(vendor, purpose) {
+  const signature = "\n\nRegards,\nPackRight Manufacturing — Procurement";
+  const tpl = {
+    rfq: `Dear ${vendor} Procurement Team,
+
+PackRight Manufacturing (Nashik plant) plans to purchase 10,000 heavy-duty corrugated shipping cartons (5-ply) for the upcoming Q3 season.
+
+Please share your best quotation for the following:
+  1. Unit price per 1,000 cartons — landed in INR incl. GST & freight.
+  2. Firm lead time (days) from purchase order to our plant.
+  3. Burst-strength grade / certifications.
+  4. Available volume discounts.
+
+Kindly respond within 5 working days.`,
+    shipping: clarificationEmail(vendor, "shipping").replace(/Regards,\nPackRight Manufacturing — Procurement$/, ""),
+    lead: clarificationEmail(vendor, "lead").replace(/Regards,\nPackRight Manufacturing — Procurement$/, ""),
+    discount: clarificationEmail(vendor, "discount").replace(/Regards,\nPackRight Manufacturing — Procurement$/, ""),
+  };
+  return (tpl[purpose] || tpl.rfq) + signature;
+}
+
+function sendEmail() {
+  const vendor = document.getElementById("mailVendor").value;
+  const to = document.getElementById("mailTo").value.trim() || MAIL_EMAILS[vendor] || "";
+  const subject = encodeURIComponent(document.getElementById("mailSubject").value || "Enquiry — PackRight Manufacturing");
+  const body = encodeURIComponent(document.getElementById("mailBody").value);
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
+  document.getElementById("mailMsg").innerHTML =
+    `<div class="banner ok">Opening your email app with the message pre-filled for ${vendor}. If nothing happens, your device has no configured mail client — use <b>Copy to clipboard</b> instead.</div>`;
+}
+
+function copyEmail() {
+  const body = document.getElementById("mailBody").value;
+  const subject = document.getElementById("mailSubject").value || "";
+  const text = subject + "\n\n" + body;
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
+    () => { document.getElementById("mailMsg").innerHTML = `<div class="banner ok">📋 Email copied to clipboard — paste it into your mail app.</div>`; },
+    () => { document.getElementById("mailMsg").innerHTML = `<div class="banner warn">Clipboard blocked — select the text and copy manually.</div>`; }
+  );
+}
+
+function initMailTab() {
+  const sel = document.getElementById("mailVendor");
+  const scored = scoreVendors();
+  const rec = recommendation(scored);
+  const order = [...scored].sort((a, b) => b.score - a.score);
+  sel.innerHTML = order.map(v =>
+    `<option value="${v.vendor}" ${rec && v.vendor === rec.vendor ? "selected" : ""}>${v.vendor} (${v.score}/100)</option>`).join("");
+  const to = document.getElementById("mailTo");
+  to.value = MAIL_EMAILS[sel.value] || "";
+  refreshMailDraft();
+}
+
 /* ---- quote parser (lightweight, demonstrates standardisation) ---- */
 function parseQuoteText(text) {
   const lower = (text || "").toLowerCase();
@@ -963,7 +1028,14 @@ const suggestPills = document.getElementById("suggestPills");
 
 renderWeights();
 renderEmails();
+initMailTab();
 refresh();
+
+document.getElementById("mailVendor").addEventListener("change", () => {
+  document.getElementById("mailTo").value = MAIL_EMAILS[document.getElementById("mailVendor").value] || "";
+  refreshMailDraft();
+});
+document.getElementById("mailPurpose").addEventListener("change", refreshMailDraft);
 </script>
 </body>
 </html>
