@@ -1,7 +1,7 @@
-# 📦 PacketRight Manufacturing · Vendor Comparison & Procurement Assistant
+# 📦 PackRight Manufacturing · Vendor Comparison & Procurement Assistant
 
-A **single-file, static, deploy-anywhere** capstone (Topic 04: *Vendor Comparison
-and Procurement Assistant*) for the "Gen AI for Business" programme.
+A **single-file, static, deploy-anywhere** capstone (**Topic 04 — Vendor Comparison
+and Procurement Assistant**) for the "Gen AI for Business" programme.
 
 It helps a fictional manufacturing company buy **corrugated cartons & packaging
 materials** more transparently:
@@ -13,62 +13,54 @@ materials** more transparently:
 3. Vendors are **compared** on four weighted criteria you edit live (Quality,
    Cost, Lead Time, Reliability).
 4. A **policy check** flags any vendor below the minimum strength grade as
-   Non-Compliant and excludes it from the recommendation — price never overrides safety.
-5. The system **recommends** one vendor, and a human **reviews / overrides** it.
+   Non-Compliant and excludes it — price never overrides quality.
+5. The system **recommends** one vendor with explainable reasoning, and a human
+   **reviews / overrides** it (What‑if sensitivity included).
 6. **No autonomous purchasing**: the tool only records a **draft** approval for Finance.
 
-## ✅ Why this needs no backend, no Docker, no API keys
+## ✅ Why it needs no backend, no Docker, no API keys
+Everything runs in `index.html`:
+- Weighted scoring & recommendation — deterministic (auditable, reproducible).
+- Policy Q&A — disclosed rule-based assistant (LLM-pluggable for production).
+- PDF quotation reading — client-side via `pdf.js` (nothing is uploaded).
+- Approval history & email drafts — `localStorage` + `mailto:`, no server.
+- $0 running cost — plain static files.
 
-Everything runs inside the browser (`index.html`):
+## 📁 Deliverables
+| File | Purpose |
+|------|---------|
+| `index.html` | The entire web app (HTML + CSS + JS) |
+| `README.md` | This guide |
+| `SUBMISSION_FORMAT.md` | 8-field submission table (name, roll no, description, problem, tools, outcomes, link) |
+| `DEMO_SCRIPT.md` | Step-by-step script for the final demonstration |
+| `Project_Overview.pptx` | 3-slide submission deck |
+| `Project_Overview.pdf` | 3-page overview (print-friendly) |
+| `assets/screenshots/` | Screenshots of all 8 tabs of the live app |
 
-- Weighted scoring & recommendation — pure deterministic JavaScript (reproducible).
-- Policy knowledge base & Q&A — disclosed rule-based assistant (swap for an LLM in production).
-- PDF quotation reading — client-side via `pdf.js` from a CDN (nothing is uploaded).
-- Approval history — stored in the browser's `localStorage`.
-- $0 running cost — just static files.
+## 🚀 Deploy for free (pick one)
+### 1. GitHub Pages (in use)
+1. Push `index.html` (and docs) to a repo on branch `main`.
+2. Repo → Settings → Pages → Source: Deploy from branch → `main / (root)` → Save.
+3. Live at `https://<user>.github.io/<repo>/`.
 
-## 📂 Files
-
-```
-index.html      # the entire app (HTML + CSS + JS)
-README.md       # this file
-```
-
-No build step, no package manager, no server.
-
-## 🚀 Deploy for free (⭐ pick one)
-
-### 1. GitHub Pages (recommended)
-1. Create a repo → push `index.html` (e.g. to branch `main`).
-2. Repo → **Settings → Pages → Build and deployment → Source: Deploy from a branch → main / (root)** → Save.
-3. Your site is live at `https://<username>.github.io/<repo>/` in a minute.
-
-### 2. Netlify Drop (fastest, no git)
-1. Go to https://app.netlify.com/drop
-2. Drag-and-drop the folder containing `index.html`.
-3. You get a public `*.netlify.app` URL instantly.
+### 2. Netlify Drop
+Drag the folder containing `index.html` onto https://app.netlify.com/drop → get a `*.netlify.app` URL.
 
 ### 3. Vercel
-1. Push to GitHub, import the repo in https://vercel.com
-2. Framework preset: **Other** → Deploy. Static site only, no config.
+Import the repo → Framework preset: Other → Deploy.
 
-## 🖥️ Run locally (optional)
-Just double-click `index.html`, or serve it:
-
-```bash
-npx serve .
-```
+## 🖥️ Run locally
+Double-click `index.html`, or `npx serve .`
 
 ## 🎯 Minimum-viable capstone covered
 - One purchasing category (cartons & packaging) ✔
 - Three fictional quotations, standardised ✔
 - Comparison on learner-chosen criteria ✔
-- Reviewable recommendation ✔
-- Human-in-the-loop override + approval history ✔
-- Explains decision criteria, and the system never makes purchases/commitments independently ✔
+- Reviewable recommendation + human-in-the-loop override ✔
+- Approval history, explainable scoring, sensitivity analysis ✔
+- Never makes purchases/commitments independently ✔
 
 ## 🔒 Safety statement
 This assistant produces a transparent, overrideable **recommendation only**. It
 executes no purchase, no payment and no contractual commitment on its own. The
-final signing authority always rests with authorised PackRight Manufacturing
-personnel.
+final signing authority always rests with authorised PackRight personnel.
