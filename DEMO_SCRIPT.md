@@ -1,6 +1,6 @@
 # Final Demonstration Script
 
-**Project:** PackRight Manufacturing — Vendor Comparison & Procurement Assistant
+**Project:** Malpani Group — Vendor Comparison & Procurement Assistant
 **Scenario:** Buying **10,000 heavy-duty corrugated cartons** (Corrugated Cartons & Packaging Materials)
 **Live URL:** https://sahilll5858.github.io/packright-procurement/
 
@@ -55,7 +55,7 @@ Still on Tab 5:
 - **Tab 8 — Extras**: upload a quotation **PDF** → parsed client-side; paste raw quote text → standardise.
 
 ## 9. Closing safety message
-*"This tool is transparent and overrideable, and it never commits funds. The final sign-off physically lives with authorised PackRight personnel."*
+*"This tool is transparent and overrideable, and it never commits funds. The final sign-off physically lives with authorised Malpani Group personnel."*
 
 ---
 

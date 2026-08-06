@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PackRight Manufacturing · Vendor Comparison & Procurement Assistant</title>
+<title>Malpani Group · Vendor Comparison & Procurement Assistant</title>
 <style>
   :root {
     --navy: #152A4A;
@@ -157,7 +157,7 @@
 
 <header>
   <div class="wrap">
-    <h1>📦 PackRight Manufacturing · Vendor Comparison & Procurement Assistant</h1>
+    <h1>📦 Malpani Group · Vendor Comparison & Procurement Assistant</h1>
     <p>Category: Corrugated Cartons &amp; Packaging Materials · Season: Q3 Shipping Pack · Target: 10,000 heavy-duty cartons</p>
     <span class="badge">Safe-by-design · recommends only · never moves money</span>
   </div>
@@ -184,7 +184,7 @@
       <div class="panel">
         <h2>ℹ️ About this tool</h2>
         <div class="small" style="line-height:1.7">
-          <b>PackRight Manufacturing</b> — Procurement — buys 10,000 heavy-duty corrugated cartons per season.
+          <b>Malpani Group</b> — Procurement — buys 10,000 heavy-duty corrugated cartons per season.
           Three fictional vendors, three different pricing formats, normalised into one auditable comparison.
         </div>
         <div class="small" style="line-height:1.7; margin-top:8px">
@@ -217,7 +217,7 @@
   <section class="tab active" id="t1">
     <div class="panel">
       <h2>The problem</h2>
-      <p class="sub">PackRight Manufacturing buys corrugated cartons and packaging materials every season. Quotations arrive in completely different formats — one vendor quotes INR all-inclusive, another quotes USD with freight on top, a third quotes ex-works without GST. Comparing them manually takes hours, hides costs, and is error-prone.</p>
+      <p class="sub">Malpani Group buys corrugated cartons and packaging materials every season. Quotations arrive in completely different formats — one vendor quotes INR all-inclusive, another quotes USD with freight on top, a third quotes ex-works without GST. Comparing them manually takes hours, hides costs, and is error-prone.</p>
 
       <h2>What this assistant does</h2>
       <div class="small" style="line-height:2">
@@ -380,7 +380,7 @@
 
 <footer>
   This assistant produces a transparent, overrideable <b>recommendation only</b>. It performs no purchase, no payment and no
-  contractual commitment on its own — the final financial decision always rests with authorised PackRight Manufacturing personnel.
+  contractual commitment on its own — the final financial decision always rests with authorised Malpani Group personnel.
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.min.mjs" type="module" crossorigin="anonymous"></script>
@@ -394,7 +394,7 @@ const RAW_QUOTES = [
   {
     vendor: "CorrLite Packaging",
     received:
-`QUOTE #CL-0841  |  PackRight Manufacturing
+`QUOTE #CL-0841  |  Malpani Group
 Item: Heavy-duty corrugated shipping cartons (5-ply, kraft)
 Price: Rs. 4,85,000 per 10,000 cartons — ALL INCLUSIVE
 (incl. GST @ 18% + local delivery to plant).
@@ -497,7 +497,7 @@ const POLICY_KB = [
   { kw: ["lead time","delivery","delay","speed","fast","lead"],
     a: "Lead time is weighted because the packaging line cannot run without cartons. Our guideline favours vendors within a 15-day lead time; longer ones require scheduling approval." },
   { kw: ["green","recycl","renewable","solar","sustainab","energy","eco"],
-    a: "PackRight runs recyclable-first packaging goals, so we grant a small bonus (up to +5) to vendors using recyclable kraft or renewable energy — strengthening our sustainability brand." },
+    a: "Malpani Group runs recyclable-first packaging goals, so we grant a small bonus (up to +5) to vendors using recyclable kraft or renewable energy — strengthening our sustainability brand." },
   { kw: ["override","change","different vendor","human","review"],
     a: "Users may override the recommendation at the Review step using their own knowledge. The chosen vendor is recorded in an approval history for traceability." },
   { kw: ["gst","tax","freight","cif","ex-works","landed","inr","usd","exchange"],
@@ -752,7 +752,7 @@ function renderProfiles(scored) {
   }
   const note = document.getElementById("esgNote");
   if (note) {
-    note.innerHTML = "🌱 <b>ESG context:</b> PackRight targets 80% recyclable packaging by 2027. A small green bonus (up to +5, editable in the sidebar) rewards recyclable-kraft / renewable-energy mills, but sustainability is reported separately from the core commercial score so the two never blur.";
+    note.innerHTML = "🌱 <b>ESG context:</b> Malpani Group targets 80% recyclable packaging by 2027. A small green bonus (up to +5, editable in the sidebar) rewards recyclable-kraft / renewable-energy mills, but sustainability is reported separately from the core commercial score so the two never blur.";
   }
 }
 
@@ -851,19 +851,19 @@ Following your quotation for our corrugated carton requirement (10,000 heavy-dut
 Kindly confirm so we can complete a fair comparison.
 
 Regards,
-PackRight Manufacturing — Procurement`,
+Malpani Group — Procurement`,
     lead: `Hi ${vendor},
 
 Could you confirm the firm delivery lead time in calendar days from purchase order to our Nashik plant, including any permits or customs?
 
 Regards,
-PackRight Manufacturing — Procurement`,
+Malpani Group — Procurement`,
     discount: `Hi ${vendor},
 
 Your quoted landed price is above the average of the responsive quotations. Could you offer a revised commercial or a volume discount for this seasonal requirement?
 
 Regards,
-PackRight Manufacturing — Procurement`,
+Malpani Group — Procurement`,
   };
   return tpl[template] || tpl.shipping;
 }
@@ -915,11 +915,11 @@ function refreshMailDraft() {
 }
 
 function buildMailDraft(vendor, purpose) {
-  const signature = "\n\nRegards,\nPackRight Manufacturing — Procurement";
+  const signature = "\n\nRegards,\nMalpani Group — Procurement";
   const tpl = {
     rfq: `Dear ${vendor} Procurement Team,
 
-PackRight Manufacturing (Nashik plant) plans to purchase 10,000 heavy-duty corrugated shipping cartons (5-ply) for the upcoming Q3 season.
+Malpani Group (Nashik plant) plans to purchase 10,000 heavy-duty corrugated shipping cartons (5-ply) for the upcoming Q3 season.
 
 Please share your best quotation for the following:
   1. Unit price per 1,000 cartons — landed in INR incl. GST & freight.
@@ -928,9 +928,9 @@ Please share your best quotation for the following:
   4. Available volume discounts.
 
 Kindly respond within 5 working days.`,
-    shipping: clarificationEmail(vendor, "shipping").replace(/Regards,\nPackRight Manufacturing — Procurement$/, ""),
-    lead: clarificationEmail(vendor, "lead").replace(/Regards,\nPackRight Manufacturing — Procurement$/, ""),
-    discount: clarificationEmail(vendor, "discount").replace(/Regards,\nPackRight Manufacturing — Procurement$/, ""),
+    shipping: clarificationEmail(vendor, "shipping").replace(/Regards,\nMalpani Group — Procurement$/, ""),
+    lead: clarificationEmail(vendor, "lead").replace(/Regards,\nMalpani Group — Procurement$/, ""),
+    discount: clarificationEmail(vendor, "discount").replace(/Regards,\nMalpani Group — Procurement$/, ""),
   };
   return (tpl[purpose] || tpl.rfq) + signature;
 }
@@ -938,7 +938,7 @@ Kindly respond within 5 working days.`,
 function sendEmail() {
   const vendor = document.getElementById("mailVendor").value;
   const to = document.getElementById("mailTo").value.trim() || MAIL_EMAILS[vendor] || "";
-  const subject = encodeURIComponent(document.getElementById("mailSubject").value || "Enquiry — PackRight Manufacturing");
+  const subject = encodeURIComponent(document.getElementById("mailSubject").value || "Enquiry — Malpani Group");
   const body = encodeURIComponent(document.getElementById("mailBody").value);
   window.location.href = `mailto:${to}?subject=${subject}&body=${body}`;
   document.getElementById("mailMsg").innerHTML =

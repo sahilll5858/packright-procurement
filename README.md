@@ -1,4 +1,4 @@
-# 📦 PackRight Manufacturing · Vendor Comparison & Procurement Assistant
+# 📦 Malpani Group · Vendor Comparison & Procurement Assistant
 
 A **single-file, static, deploy-anywhere** capstone (**Topic 04 — Vendor Comparison
 and Procurement Assistant**) for the "Gen AI for Business" programme.
@@ -63,4 +63,4 @@ Double-click `index.html`, or `npx serve .`
 ## 🔒 Safety statement
 This assistant produces a transparent, overrideable **recommendation only**. It
 executes no purchase, no payment and no contractual commitment on its own. The
-final signing authority always rests with authorised PackRight personnel.
+final signing authority always rests with authorised Malpani Group personnel.
